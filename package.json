@@ -1,0 +1,13 @@
+{
+  "name": "fastdraw-lottopicker",
+  "version": "1.0.0",
+  "description": "Lottery number picker application",
+  "scripts": {
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && node src/index.js\"",
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "start": "cd backend && node src/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 

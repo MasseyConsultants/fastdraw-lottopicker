@@ -1,0 +1,157 @@
+# Cursor AI Rules for fastdraw-lottopicker Project
+
+## Project Overview
+- **Project Name**: fastdraw-lottopicker
+- **Objective**: Build a web application to analyze Texas Lottery (Lotto Texas and Powerball) historical data, generate optimized number picks based on frequency, grouping analysis, and AI-generated picks, store picks in a CSV file, and display results with slot machine-style animations.
+- **Tech Stack**:
+  - **Frontend**: React (JSX, Tailwind CSS, CDN-hosted via cdn.jsdelivr.net)
+  - **Backend**: Node.js with Express, REST API, Microsoft AutoGen for task orchestration, CORS for security
+  - **Data Storage**: CSV files (`lottotexas.csv`, `powerball.csv`, `generated_picks.csv`) in `fastdraw-lottopicker/backend/lottery-data`
+  - **Development Environment**: Cursor AI
+- **Key Features**:
+  - User inputs number of quick draws.
+  - Backend analyzes historical lottery data, generates AI-based picks, and stores all picks in `generated_picks.csv`.
+  - Frontend displays picks (frequency-based and AI-generated) with slot machine animations and categorized hot picks (e.g., daily, overall).
+  - Scalable for future enhancements (e.g., real-time data updates).
+
+## Project Structure
+- **Root**: `fastdraw-lottopicker/`
+  - **Frontend**: `frontend/`
+    - `src/`: React components, hooks, and utilities
+    - `index.html`: Single-page app entry point
+    - `src/App.jsx`: Main React component
+    - `src/components/`: Reusable components (e.g., `SlotMachine.jsx`, `HotPicks.jsx`, `AIPicks.jsx`)
+    - `src/styles/`: Tailwind CSS configuration and custom styles
+  - **Backend**: `backend/`
+    - `src/`: API routes, services, utilities, and AutoGen agents
+    - `lottery-data/`: Stores `lottotexas.csv`, `powerball.csv`, and `generated_picks.csv`
+    - `src/index.js`: Express server entry point
+    - `src/routes/`: API endpoints (e.g., `/api/lottery/picks`, `/api/lottery/ai-picks`)
+    - `src/services/`: Business logic (e.g., data parsing, analysis algorithms, CSV writing)
+    - `src/agents/`: AutoGen agent definitions (e.g., `parserAgent.js`, `analysisAgent.js`, `aiPickAgent.js`)
+    - `.env`: Stores API keys (e.g., `XAI_API_KEY`) for AI pick generation
+  - **Configuration**:
+    - `.gitignore`: Ignores `node_modules`, `lottery-data/*.csv` (optional for `generated_picks.csv`), `.env`, and build artifacts
+    - `package.json`: Dependencies for frontend and backend
+    - `cursorairules.txt`: This file
+
+## Coding Standards
+- **General**:
+  - Follow SOLID principles and separation of concerns.
+  - Write modular, reusable, and testable code.
+  - Use ESLint and Prettier for code formatting (configure in Cursor AI).
+  - Include JSDoc comments for functions, components, and agents.
+- **Frontend (React)**:
+  - Use functional components with hooks (e.g., `useState`, `useEffect`).
+  - Prefer JSX over `React.createElement`.
+  - Use Tailwind CSS for styling (configure via CDN or `tailwind.config.js`).
+  - Avoid `<form>` tags due to sandbox restrictions; use `onClick` handlers instead.
+  - Use `className` instead of `class` for JSX attributes.
+  - Implement slot machine animations using CSS keyframes and React state transitions.
+  - Fetch data from backend API using `fetch` or `axios`.
+  - Display AI-generated picks distinctly (e.g., labeled as “AI Picks”).
+- **Backend (Node.js/Express)**:
+  - Use RESTful API design (e.g., `GET /api/lottery/picks?draws=5`, `GET /api/lottery/ai-picks?draws=5`).
+  - Parse CSV files using `csv-parse` or similar library.
+  - Write generated picks to `generated_picks.csv` using `csv-writer`.
+  - Implement frequency analysis, grouping algorithms, and AI pick integration.
+  - Use `cors` middleware to restrict API access to authorized origins (e.g., `http://localhost:3000`).
+  - Handle errors with middleware and return meaningful HTTP status codes.
+  - Use environment variables (via `dotenv`) for configuration (e.g., port, API keys).
+- **Microsoft AutoGen**:
+  - Define agents in `src/agents/`:
+    - **Parser Agent**: Reads and parses CSV files.
+    - **Analysis Agent**: Performs frequency and grouping analysis.
+    - **AI Pick Agent**: Queries external AI API (e.g., xAI Grok) for picks.
+    - **Orchestrator Agent**: Coordinates tasks, aggregates results, and triggers CSV writing.
+  - Use AutoGen’s conversational framework for agent communication.
+  - Ensure agents are modular and reusable.
+  - Log agent interactions for debugging.
+- **Data Analysis Algorithm**:
+  - Parse `lottotexas.csv` and `powerball.csv` into structured data.
+  - Analyze historical draws for:
+    - Frequency of individual numbers (hot/cold numbers).
+    - Common number groupings (e.g., pairs, triplets).
+    - Trends over time (e.g., daily, weekly hot picks).
+  - Weight numbers by frequency and recency, but avoid overfitting to patterns due to lottery randomness.
+  - Generate picks by sampling from weighted distributions or using combinatorial optimization.
+  - For AI picks, query external API and format response to match game rules (e.g., 6 numbers for Lotto Texas, 5+1 for Powerball).
+- **Generated Picks Storage**:
+  - Store all picks in `generated_picks.csv` with columns: `Game, PickType, Date, Num1, Num2, Num3, Num4, Num5, Num6, Powerball` (Powerball only for Powerball game).
+  - Example row: `Lotto Texas,frequency,2025-05-09,3,15,27,42,50,54,` or `Powerball,ai,2025-05-09,7,19,33,46,52,12,`.
+  - Use `csv-writer` to append picks after each API call.
+  - Ensure thread-safe writing to avoid conflicts during concurrent requests.
+- **Environment Variables**:
+  - Store API keys in `backend/.env` (e.g., `XAI_API_KEY=your_key_here`).
+  - Load with `dotenv` in `src/index.js`.
+  - Never commit `.env` to version control.
+- **CORS Security**:
+  - Configure `cors` to allow requests only from the frontend origin (e.g., `http://localhost:3000` during development).
+  - Update allowed origins for production (e.g., deployed frontend URL).
+
+## Data Specifications
+- **Lotto Texas (`lottotexas.csv`)**:
+  - Columns:
+    - Nov 14, 1992–May 3, 2003: Game Name, Month, Day, Year, Num1, Num2, Num3, Num4, Num5, Num6
+    - May 7, 2003–Apr 22, 2006: Game Name, Month, Day, Year, Num1, Num2, Num3, Num4, Num5, Bonus Ball
+    - Apr 26, 2006–present: Game Name, Month, Day, Year, Num1, Num2, Num3, Num4, Num5, Num6
+  - Number ranges: Num1–Num6 (1–54, varies by period); Bonus Ball (varies).
+- **Powerball (`powerball.csv`)**:
+  - Columns:
+    - Feb 3, 2010–Jan 14, 2012: Game Name, Month, Day, Year, Num1, Num2, Num3, Num4, Num5, Powerball, Power Play
+    - Jan 18, 2012–Jan 18, 2014: Game Name, Month, Day, Year, Num1, Num2, Num3, Num4, Num5, Powerball
+    - Jan 22, 2014–present: Game Name, Month, Day, Year, Num1, Num2, Num3, Num4, Num5, Powerball, Power Play
+  - Number ranges: Num1–Num5 (1–69, varies by period); Powerball (1–26, varies); Power Play (optional multiplier).
+- **Generated Picks (`generated_picks.csv`)**:
+  - Columns: `Game,PickType,Date,Num1,Num2,Num3,Num4,Num5,Num6,Powerball`
+  - `Game`: `Lotto Texas` or `Powerball`
+  - `PickType`: `frequency` or `ai`
+  - `Date`: ISO format (e.g., `2025-05-09`)
+  - `Num1–Num6`: Numbers for Lotto Texas or Num1–Num5 for Powerball
+  - `Powerball`: Powerball number (empty for Lotto Texas)
+- **Analysis Considerations**:
+  - Normalize data across different periods due to changing number ranges.
+  - Handle missing or optional fields (e.g., Power Play, Bonus Ball).
+  - Validate data integrity during parsing.
+
+## Development Guidelines
+- **Setup**:
+  - Initialize frontend and backend with `npm init` in respective folders.
+  - Install dependencies:
+    - Frontend: `react`, `react-dom`, `axios` (via CDN or npm).
+    - Backend: `express`, `csv-parse`, `csv-writer`, `dotenv`, `autogen`, `cors`.
+  - Configure Tailwind CSS in frontend (use CDN or local setup).
+  - Create `.env` in `backend/` with placeholder API keys (e.g., `XAI_API_KEY=`).
+  - Create empty `generated_picks.csv` in `lottery-data/` with header row.
+- **Workflow**:
+  - Use Cursor AI’s autocomplete and suggestions, referencing this file.
+  - Commit changes frequently with descriptive messages (e.g., `git commit -m "Add CORS and generated picks CSV"`).
+  - Test API endpoints with tools like Postman or Curl.
+  - Test frontend components in isolation using browser dev tools.
+  - Test AutoGen agents by logging interactions and verifying outputs.
+  - Verify `generated_picks.csv` is updated after API calls.
+- **Future Enhancements**:
+  - Add real-time data fetching from Texas Lottery website (if API available).
+  - Enhance slot machine animations with WebGL or canvas for smoother effects.
+  - Implement user accounts for saving favorite picks.
+  - Expand AI pick capabilities with multiple AI providers.
+
+## Example Workflow
+1. User opens app, inputs number of quick draws (e.g., 5) and selects pick type (frequency-based or AI).
+2. Frontend sends request to backend (e.g., `GET /api/lottery/picks?draws=5&game=lotto` or `GET /api/lottery/ai-picks?draws=5&game=lotto`).
+3. Backend’s Orchestrator Agent assigns tasks:
+   - Parser Agent reads `lottotexas.csv`.
+   - Analysis Agent computes hot numbers or groupings.
+   - AI Pick Agent queries external API (using `XAI_API_KEY`).
+4. Orchestrator Agent saves picks to `generated_picks.csv` (e.g., `Lotto Texas,frequency,2025-05-09,3,15,27,42,50,54,`).
+5. Backend returns JSON (e.g., `[{draw: [3, 15, 27, 42, 50, 54], type: "frequency"}, {draw: [7, 19, 33, 46, 52, 54], type: "ai"}]`).
+6. Frontend displays picks with slot machine animation for each draw, labeling AI picks.
+7. Frontend shows hot picks table (e.g., “Daily Hot: 3, 15, 42”) and AI picks separately.
+
+## Notes
+- Acknowledge lottery randomness; avoid overpromising winning odds.
+- Ensure UI is responsive and accessible (e.g., ARIA labels for animations).
+- Securely handle API keys; never expose in frontend or logs.
+- Use CORS to restrict API access to trusted origins.
+- Log errors to console and handle gracefully in UI.
+- Reference this file in Cursor AI prompts to maintain consistency.
