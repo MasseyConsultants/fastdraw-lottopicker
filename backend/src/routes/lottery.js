@@ -6,6 +6,8 @@ const lotteryService = require('../services/lotteryService');
 router.get('/picks', async (req, res) => {
   try {
     const { draws = 1, game = 'lottotexas' } = req.query;
+    // Load lottery data first
+    await lotteryService.loadLotteryData(game);
     const picks = await lotteryService.generateFrequencyPicks(game, parseInt(draws));
     res.json(picks);
   } catch (error) {
