@@ -29,15 +29,15 @@ router.get('/ai-picks', async (req, res) => {
   }
 });
 
-// Get analysis
-router.get('/analysis', async (req, res) => {
+// Get analytics (renamed from analysis to match frontend)
+router.get('/analytics', async (req, res) => {
   try {
     const { game = 'lottotexas' } = req.query;
     const analysis = await lotteryService.getAnalysis(game);
     res.json(analysis);
   } catch (error) {
-    console.error('Error in /analysis route:', error);
-    res.status(500).json({ error: error.message || 'Failed to get analysis' });
+    console.error('Error in /analytics route:', error);
+    res.status(500).json({ error: error.message || 'Failed to get analytics' });
   }
 });
 

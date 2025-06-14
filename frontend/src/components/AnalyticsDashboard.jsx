@@ -19,6 +19,9 @@ ChartJS.register(
   Legend
 );
 
+// Use absolute URL for API calls
+const API_BASE_URL = 'https://api.robertwmassey.com';
+
 const AnalyticsDashboard = ({ game }) => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +31,9 @@ const AnalyticsDashboard = ({ game }) => {
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/lottery/analysis?game=${game}`);
+        const response = await fetch(`${API_BASE_URL}/api/lottery/analytics?game=${game}`, {
+          credentials: 'include'
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch analytics');
         }

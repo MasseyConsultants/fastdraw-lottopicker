@@ -3,6 +3,9 @@ import LotteryDraw from './components/LotteryDraw'
 import SlotMachine from './components/SlotMachine'
 import AnalyticsDashboard from './components/AnalyticsDashboard'
 
+// Use absolute URL for API calls
+const API_BASE_URL = 'https://api.robertwmassey.com';
+
 function App() {
   const [game, setGame] = useState('lottotexas')
   const [numDraws, setNumDraws] = useState(1)
@@ -12,7 +15,9 @@ function App() {
 
   useEffect(() => {
     // Only fetch initial picks when game changes
-    fetch(`/api/lottery/picks?draws=1&game=${game}`)
+    fetch(`${API_BASE_URL}/api/lottery/picks?draws=1&game=${game}`, {
+      credentials: 'include'
+    })
       .then(response => response.json())
       .then(data => {
         console.log('Raw picks data:', data);
@@ -81,7 +86,9 @@ function App() {
       }
 
       // Only fetch the number of new picks we need
-      const response = await fetch(`/api/lottery/picks?draws=${newPicksNeeded}&game=${game}`)
+      const response = await fetch(`${API_BASE_URL}/api/lottery/picks?draws=${newPicksNeeded}&game=${game}`, {
+        credentials: 'include'
+      })
       if (!response.ok) {
         throw new Error('Failed to generate picks')
       }
